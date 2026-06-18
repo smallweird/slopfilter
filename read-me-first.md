@@ -8,11 +8,6 @@ META: You are CONTINUING this project in a new session/machine with no memory of
 ## WHO
 Diego = product owner. Understands code but does NOT write it / has no time. Tests by loading the unpacked extension in Chrome and observing. Wants crisp/modern UI, tasteful animations (not overly complex). Communicate decisions + tradeoffs; he directs.
 
-## WHERE
-- Project root: `D:\Ideas\slop-addon` (Windows 10).
-- Loadable extension (point Chrome here): `D:\Ideas\slop-addon\extension`
-- Full design doc: `D:\Ideas\slop-addon\SPEC.md`
-- Icon generator: `D:\Ideas\slop-addon\scripts\generate-icons.js`
 
 ## ENV
 - Windows 10, PowerShell (use PS syntax: `$null`, `$env:VAR`, backtick line-continuation).
