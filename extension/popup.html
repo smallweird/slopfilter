@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="card">
+      <!-- Brand + identity -->
+      <header class="brand">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#1d9bf0" />
+              <stop offset="1" stop-color="#6c5ce7" />
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#g)" />
+          <path d="M14 16 H34 L26 26 V33 L22 31 V26 Z" fill="#fff" />
+        </svg>
+        <div class="brand-text">
+          <div class="brand-title">Slopfilter</div>
+          <div class="brand-sub">Community slop filter</div>
+        </div>
+        <div class="identity" id="identity" title="Your anonymous handle">
+          <span class="dot" id="statusDot"></span>
+          <span id="displayName">…</span>
+        </div>
+      </header>
+
+      <!-- Strictness -->
+      <section class="block">
+        <div class="block-label">
+          Strictness <span class="muted">· min. flags to hide</span>
+        </div>
+        <div class="segmented" id="strictness" role="group" aria-label="Strictness">
+          <span class="seg-thumb seg-thumb-4" id="strictThumb"></span>
+          <button class="seg" type="button" data-val="1">+1</button>
+          <button class="seg" type="button" data-val="10">+10</button>
+          <button class="seg" type="button" data-val="100">+100</button>
+          <button class="seg" type="button" data-val="1000">+1000</button>
+        </div>
+        <div class="hint" id="strictHint"></div>
+      </section>
+
+      <!-- Categories -->
+      <section class="block">
+        <div class="block-label">Block content types</div>
+        <div class="chips" id="chips">
+          <button class="chip" type="button" data-cat="bot">
+            <span class="chip-ico">🤖</span><span class="chip-lbl">bot</span>
+            <span class="chip-check">✓</span>
+          </button>
+          <button class="chip" type="button" data-cat="ai-slop">
+            <span class="chip-ico">✨</span><span class="chip-lbl">AI-slop</span>
+            <span class="chip-check">✓</span>
+          </button>
+          <button class="chip" type="button" data-cat="ragebait">
+            <span class="chip-ico">😡</span><span class="chip-lbl">ragebait</span>
+            <span class="chip-check">✓</span>
+          </button>
+          <button class="chip" type="button" data-cat="spam">
+            <span class="chip-ico">🗑️</span><span class="chip-lbl">spam</span>
+            <span class="chip-check">✓</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Treatment -->
+      <section class="block">
+        <div class="block-label">When flagged</div>
+        <div class="segmented two" id="treatment" role="group" aria-label="Treatment">
+          <span class="seg-thumb seg-thumb-2" id="treatThumb"></span>
+          <button class="seg" type="button" data-val="blur">Blur</button>
+          <button class="seg" type="button" data-val="hide">Hide</button>
+        </div>
+      </section>
+
+      <!-- Support -->
+      <button class="support" id="support" type="button">
+        <span class="support-emoji">☕</span>
+        <span>Reserve your name · <strong>$1/mo</strong></span>
+      </button>
+
+      <footer class="foot">
+        <span class="foot-count" id="flagCount">0</span> accounts flagged by you
+      </footer>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

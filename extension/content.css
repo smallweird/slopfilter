@@ -1,0 +1,146 @@
+/* content.css — styles injected into x.com by Slopfilter
+ *
+ * NOTE: treatments (blur/hide) are applied as INLINE styles in content.js, not
+ * here — X overwrites any class we add to an <article> on re-render. This file
+ * styles the floating flag button, its menu, and the blurred-post label.
+ * Values are hardcoded (not CSS vars) to avoid colliding with X's own :root vars. */
+
+/* `hidden` would set display:none, but our explicit `display` rules override it,
+ * so re-assert it with higher specificity. */
+.slopfilter-flagwrap[hidden],
+.slopfilter-menu[hidden] {
+  display: none !important;
+}
+
+.slopfilter-flagwrap {
+  position: absolute;
+  z-index: 99999;
+  display: inline-flex;
+  align-items: center;
+  transition: top 0.08s ease, left 0.08s ease;
+}
+
+.slopfilter-flagbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 15px;
+  line-height: 1;
+  cursor: grab;
+  color: #fff;
+  background: linear-gradient(135deg, #1d9bf0, #6c5ce7);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 14px rgba(29, 155, 240, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  animation: slopfilter-btn-in 0.16s cubic-bezier(0.2, 0.7, 0.3, 1);
+  transition: transform 0.12s cubic-bezier(0.2, 0.7, 0.3, 1), box-shadow 0.16s ease;
+}
+
+@keyframes slopfilter-btn-in {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.slopfilter-flagbtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+}
+
+.slopfilter-flagbtn:active {
+  cursor: grabbing;
+  transform: scale(0.96);
+}
+
+/* ----- Dropdown menu ----- */
+
+.slopfilter-menu {
+  position: absolute;
+  top: 135%;
+  right: 0;
+  z-index: 100000;
+  min-width: 184px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  background: #18222e;
+  border: 1px solid #283544;
+  border-radius: 14px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.45);
+  transform-origin: top right;
+  animation: slopfilter-pop 0.14s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@keyframes slopfilter-pop {
+  from { opacity: 0; transform: scale(0.92) translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.slopfilter-menu-header {
+  margin-bottom: 4px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8b98a5;
+  border-bottom: 1px solid #232f3b;
+}
+
+.slopfilter-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 9px 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  color: #e7e9ea;
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease;
+}
+
+.slopfilter-menu-item:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #1d9bf0, #6c5ce7);
+}
+
+.slopfilter-menu-item:active {
+  transform: scale(0.98);
+}
+
+.slopfilter-ico {
+  width: 18px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ----- Blurred-post label ----- */
+
+.slopfilter-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  max-width: 86%;
+  padding: 8px 16px;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(29, 155, 240, 0.96), rgba(108, 92, 231, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  pointer-events: none; /* clicks fall through to the <article> for reveal */
+  animation: slopfilter-pop 0.16s cubic-bezier(0.2, 0.7, 0.3, 1);
+}

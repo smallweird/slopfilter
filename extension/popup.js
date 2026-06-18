@@ -1,0 +1,111 @@
+// popup.js — Slopfilter popup logic
+// Writes settings to chrome.storage; the content script reacts live (no save button).
+
+const STOPS = [1, 10, 100, 1000];
+
+function defaultSettings() {
+  return {
+    strictness: 10,
+    treatment: 'blur', // 'blur' | 'hide'
+    categories: { bot: true, 'ai-slop': true, ragebait: true, spam: true },
+    anchor: { fx: 0.95, fy: 0.05 },
+  };
+}
+
+const el = {
+  dot: document.getElementById('statusDot'),
+  name: document.getElementById('displayName'),
+  strict: document.getElementById('strictness'),
+  strictThumb: document.getElementById('strictThumb'),
+  strictHint: document.getElementById('strictHint'),
+  treat: document.getElementById('treatment'),
+  treatThumb: document.getElementById('treatThumb'),
+  chips: document.getElementById('chips'),
+  support: document.getElementById('support'),
+  count: document.getElementById('flagCount'),
+};
+
+let settings = defaultSettings();
+
+// Move a segmented control's thumb + highlight the active button.
+function setSegment(container, thumb, value) {
+  const segs = [...container.querySelectorAll('.seg')];
+  const idx = segs.findIndex((s) => s.dataset.val === String(value));
+  const active = idx < 0 ? 0 : idx;
+  segs.forEach((s, i) => s.classList.toggle('active', i === active));
+  thumb.style.transform = `translateX(${active * 100}%)`;
+}
+
+function renderStrictHint() {
+  el.strictHint.textContent =
+    settings.strictness === 1
+      ? 'Hides accounts with just 1 flag (basically everyone).'
+      : `Hides accounts once ${settings.strictness} people flag them. Your own flags always hide.`;
+}
+
+async function load() {
+  const sync = await chrome.storage.sync.get([
+    'slopfilter:displayName',
+    'slopfilter:subscribed',
+  ]);
+  const local = await chrome.storage.local.get([
+    'slopfilter:settings',
+    'slopfilter:flags',
+  ]);
+
+  el.name.textContent = sync['slopfilter:displayName'] || 'anon';
+  const subscribed = !!sync['slopfilter:subscribed'];
+  el.dot.classList.toggle('gold', subscribed);
+  document.getElementById('identity').title = subscribed
+    ? 'Reserved handle'
+    : 'Free handle — anonymous';
+
+  settings = Object.assign(defaultSettings(), local['slopfilter:settings'] || {});
+
+  setSegment(el.strict, el.strictThumb, settings.strictness);
+  setSegment(el.treat, el.treatThumb, settings.treatment);
+  renderStrictHint();
+
+  for (const chip of el.chips.querySelectorAll('.chip')) {
+    chip.classList.toggle('on', !!settings.categories[chip.dataset.cat]);
+  }
+
+  el.count.textContent = (local['slopfilter:flags'] || []).length;
+}
+
+async function save() {
+  await chrome.storage.local.set({ 'slopfilter:settings': settings });
+}
+
+el.strict.addEventListener('click', (e) => {
+  const seg = e.target.closest('.seg');
+  if (!seg) return;
+  settings.strictness = Number(seg.dataset.val);
+  setSegment(el.strict, el.strictThumb, settings.strictness);
+  renderStrictHint();
+  save();
+});
+
+el.treat.addEventListener('click', (e) => {
+  const seg = e.target.closest('.seg');
+  if (!seg) return;
+  settings.treatment = seg.dataset.val;
+  setSegment(el.treat, el.treatThumb, settings.treatment);
+  save();
+});
+
+el.chips.addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  const cat = chip.dataset.cat;
+  settings.categories[cat] = !settings.categories[cat];
+  chip.classList.toggle('on', settings.categories[cat]);
+  save();
+});
+
+el.support.addEventListener('click', () => {
+  // Phase 3: open Stripe checkout / donation page.
+  chrome.tabs.create({ url: 'https://example.com/slopfilter-support' });
+});
+
+load();
