@@ -162,6 +162,7 @@ chrome.runtime.onMessage.addListener((msg) => {
       if (!flaggerId) return;
       try {
         await pushFlag(flaggerId, msg.handle, msg.category);
+        await syncCommunity(); // pull the updated list back down immediately
       } catch {
         await enqueueRetry({
           flagger_id: flaggerId,
