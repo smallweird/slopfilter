@@ -50,6 +50,7 @@
     const local = await chrome.storage.local.get([
       'slopfilter:settings',
       'slopfilter:flags',
+      'slopfilter:community',
     ]);
     settings = Object.assign(defaultSettings(), local['slopfilter:settings'] || {});
     if (!settings.anchor) settings.anchor = defaultSettings().anchor;
@@ -57,8 +58,12 @@
     for (const f of local['slopfilter:flags'] || []) {
       myFlags.set(f.handle.toLowerCase(), f);
     }
+    community.clear();
+    for (const [handle, data] of Object.entries(local['slopfilter:community'] || {})) {
+      community.set(handle, { count: data.count, categories: new Set(data.categories || []) });
+    }
     console.debug(
-      `[slopfilter] state loaded: ${myFlags.size} local flag(s), treatment=${settings.treatment}, cats=${JSON.stringify(settings.categories)}`
+      `[slopfilter] state loaded: ${myFlags.size} local flag(s), ${community.size} community, treatment=${settings.treatment}`
     );
   }
 
@@ -148,8 +153,9 @@
       flags.push({ handle, category, ts: Date.now() });
       await chrome.storage.local.set({ 'slopfilter:flags': flags });
     }
+    // Push to Supabase via background (handles offline retry queue).
+    chrome.runtime.sendMessage({ type: 'SUBMIT_FLAG', handle, category });
     console.debug(`[slopfilter] flagged @${handle} as ${category}`);
-    // Phase 2: also push to the server here (optimistic + offline retry queue).
   }
 
   // Idempotent: (re)assert the correct treatment on every post.
@@ -347,7 +353,11 @@
   const observer = new MutationObserver(scheduleRefresh);
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && (changes['slopfilter:settings'] || changes['slopfilter:flags'])) {
+    if (area === 'local' && (
+      changes['slopfilter:settings'] ||
+      changes['slopfilter:flags'] ||
+      changes['slopfilter:community']
+    )) {
       loadState().then(scheduleRefresh);
     }
   });
