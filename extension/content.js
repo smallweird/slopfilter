@@ -153,9 +153,10 @@
       flags.push({ handle, category, ts: Date.now() });
       await chrome.storage.local.set({ 'slopfilter:flags': flags });
     }
-    myFlags.set(key, { handle, category, ts: Date.now() }); // update in-memory immediately
+    myFlags.set(key, { handle, category, ts: Date.now() });
+    revealedHandles.delete(key); // undo any prior unflag/reveal for this session
     chrome.runtime.sendMessage({ type: 'SUBMIT_FLAG', handle, category });
-    refresh(); // don't wait for the storage listener
+    refresh();
     console.debug(`[slopfilter] flagged @${handle} as ${category}`);
   }
 
@@ -184,8 +185,9 @@
       (f) => f.handle.toLowerCase() !== key
     );
     await chrome.storage.local.set({ 'slopfilter:flags': flags });
-    myFlags.delete(key); // update in-memory immediately
-    refresh(); // don't wait for the storage listener
+    myFlags.delete(key);
+    revealedHandles.add(key); // suppress community filtering too for this session
+    refresh();
   }
 
   function buildMenuItems(handle) {
