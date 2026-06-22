@@ -21,7 +21,6 @@ const el = {
   treat: document.getElementById('treatment'),
   treatThumb: document.getElementById('treatThumb'),
   chips: document.getElementById('chips'),
-  support: document.getElementById('support'),
   count: document.getElementById('flagCount'),
   catCounts: document.getElementById('catCounts'),
 };
@@ -113,9 +112,5 @@ el.chips.addEventListener('click', (e) => {
   save();
 });
 
-el.support.addEventListener('click', () => {
-  // Phase 3: open Stripe checkout / donation page.
-  chrome.tabs.create({ url: 'https://example.com/slopfilter-support' });
-});
 
 load();

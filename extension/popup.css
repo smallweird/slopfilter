@@ -267,42 +267,6 @@ body {
   transform: scale(1);
 }
 
-/* ---- Support ---- */
-.support {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 12px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--accent);
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(108, 92, 231, 0.32);
-  transition: transform 0.12s var(--ease), box-shadow 0.16s var(--ease), filter 0.16s var(--ease);
-}
-
-.support strong {
-  font-weight: 800;
-}
-
-.support-emoji {
-  font-size: 15px;
-}
-
-.support:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(108, 92, 231, 0.42);
-  filter: brightness(1.05);
-}
-
-.support:active {
-  transform: translateY(0);
-}
-
 /* ---- Footer ---- */
 .foot {
   padding-top: 2px;
