@@ -23,6 +23,7 @@ const el = {
   chips: document.getElementById('chips'),
   support: document.getElementById('support'),
   count: document.getElementById('flagCount'),
+  catCounts: document.getElementById('catCounts'),
 };
 
 let settings = defaultSettings();
@@ -70,7 +71,16 @@ async function load() {
     chip.classList.toggle('on', !!settings.categories[chip.dataset.cat]);
   }
 
-  el.count.textContent = (local['slopfilter:flags'] || []).length;
+  const flags = local['slopfilter:flags'] || [];
+  el.count.textContent = flags.length;
+
+  const CAT_ICONS = { bot: '🤖', 'ai-slop': '✨', ragebait: '😡', spam: '🗑️' };
+  const tally = { bot: 0, 'ai-slop': 0, ragebait: 0, spam: 0 };
+  for (const f of flags) if (tally[f.category] !== undefined) tally[f.category]++;
+  const parts = Object.entries(tally)
+    .filter(([, n]) => n > 0)
+    .map(([cat, n]) => `${CAT_ICONS[cat]} ${n}`);
+  el.catCounts.textContent = parts.join('  ·  ');
 }
 
 async function save() {

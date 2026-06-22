@@ -176,6 +176,68 @@
     requestAnimationFrame(() => { scheduled = false; refresh(); });
   }
 
+  async function removeFlag(handle) {
+    const local = await chrome.storage.local.get('slopfilter:flags');
+    const flags = (local['slopfilter:flags'] || []).filter(
+      (f) => f.handle.toLowerCase() !== handle.toLowerCase()
+    );
+    await chrome.storage.local.set({ 'slopfilter:flags': flags });
+    myFlags.delete(handle.toLowerCase());
+    scheduleRefresh();
+  }
+
+  function buildMenuItems(handle) {
+    const header = document.getElementById('slopfilter-menu-header');
+    // Remove all items after the header
+    while (header.nextSibling) header.nextSibling.remove();
+
+    const flagged = handle && myFlags.has(handle.toLowerCase());
+
+    if (flagged) {
+      header.textContent = `@${handle}`;
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'slopfilter-menu-item slopfilter-unflag';
+      const ico = document.createElement('span');
+      ico.className = 'slopfilter-ico';
+      ico.textContent = '✕';
+      const lbl = document.createElement('span');
+      lbl.textContent = 'Unflag';
+      item.append(ico, lbl);
+      item.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (handle) await removeFlag(handle);
+        closeMenu();
+        hideFloat();
+      });
+      floatMenu.appendChild(item);
+    } else {
+      header.textContent = 'Flag as slop';
+      const ICONS = { bot: '🤖', 'ai-slop': '✨', ragebait: '😡', spam: '🗑️' };
+      const LABELS = { bot: 'bot', 'ai-slop': 'AI-slop', ragebait: 'ragebait', spam: 'spam' };
+      for (const cat of CATEGORIES) {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'slopfilter-menu-item';
+        const ico = document.createElement('span');
+        ico.className = 'slopfilter-ico';
+        ico.textContent = ICONS[cat];
+        const lbl = document.createElement('span');
+        lbl.textContent = LABELS[cat];
+        item.append(ico, lbl);
+        item.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const art = targetArticle || hoverArticle;
+          const h = art && extractHandle(art);
+          if (h) await saveFlag(h, cat);
+          closeMenu();
+          hideFloat();
+        });
+        floatMenu.appendChild(item);
+      }
+    }
+  }
+
   // ----- Floating, draggable flag button -----
 
   let floatRoot;
@@ -200,40 +262,26 @@
     btn.title = 'Flag this account (drag to move)';
     btn.textContent = '\u{1F6A9}'; // 🚩
 
-    const ICONS = { bot: '🤖', 'ai-slop': '✨', ragebait: '😡', spam: '🗑️' };
-    const LABELS = { bot: 'bot', 'ai-slop': 'AI-slop', ragebait: 'ragebait', spam: 'spam' };
-
     floatMenu = document.createElement('div');
     floatMenu.className = 'slopfilter-menu';
     floatMenu.hidden = true;
 
     const header = document.createElement('div');
     header.className = 'slopfilter-menu-header';
+    header.id = 'slopfilter-menu-header';
     header.textContent = 'Flag as slop';
     floatMenu.appendChild(header);
 
-    for (const cat of CATEGORIES) {
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'slopfilter-menu-item';
-
-      const ico = document.createElement('span');
-      ico.className = 'slopfilter-ico';
-      ico.textContent = ICONS[cat];
-      const lbl = document.createElement('span');
-      lbl.textContent = LABELS[cat];
-      item.append(ico, lbl);
-
-      item.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const art = targetArticle || hoverArticle;
-        const handle = art && extractHandle(art);
-        if (handle) await saveFlag(handle, cat);
-        closeMenu();
-        hideFloat();
-      });
-      floatMenu.appendChild(item);
-    }
+    // Click = open/close menu (suppressed right after a drag)
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (justDragged) { justDragged = false; return; }
+      targetArticle = hoverArticle;
+      const handle = targetArticle && extractHandle(targetArticle);
+      buildMenuItems(handle);
+      menuOpen = !menuOpen;
+      floatMenu.hidden = !menuOpen;
+    });
 
     // Drag start
     btn.addEventListener('mousedown', (e) => {
@@ -248,14 +296,6 @@
       floatRoot.style.transition = 'none';
     });
 
-    // Click = open/close menu (suppressed right after a drag)
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (justDragged) { justDragged = false; return; }
-      targetArticle = hoverArticle;
-      menuOpen = !menuOpen;
-      floatMenu.hidden = !menuOpen;
-    });
 
     floatRoot.append(btn, floatMenu);
     document.body.appendChild(floatRoot);
