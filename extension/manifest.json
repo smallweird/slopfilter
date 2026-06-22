@@ -7,7 +7,7 @@
   "host_permissions": [
     "https://x.com/*",
     "https://twitter.com/*",
-    "https://cyvhtwrpdvdnpfxcjcdm.supabase.co/*"
+    "https://uuvrkgqgsrqkxvdxdsyk.supabase.co/*"
   ],
   "background": { "service_worker": "background.js" },
   "icons": {

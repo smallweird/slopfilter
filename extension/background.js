@@ -2,9 +2,9 @@
 // Responsibilities: identity bootstrap, default settings, flag submission to
 // Supabase (with offline retry queue), and periodic community-list delta sync.
 
-const SUPABASE_URL = 'https://cyvhtwrpdvdnpfxcjcdm.supabase.co';
+const SUPABASE_URL = 'https://uuvrkgqgsrqkxvdxdsyk.supabase.co';
 const ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5dmh0d3JwZHZkbnBmeGNqY2RtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4Njk4ODYsImV4cCI6MjA5NzQ0NTg4Nn0.OLWNUvsIgwsHN0wtX4ktwdoZptlR6GWIBViSy73SiUs';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1dnJrZ3Fnc3Jxa3h2ZHhkc3lrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNjQzNjAsImV4cCI6MjA5Nzc0MDM2MH0.EHdaVvM00uS_-6L0E5HYBfN5iiiAExn5DbtxSRYxBS8';
 
 const ADJECTIVES = [
   'suspicious', 'grumpy', 'sleepy', 'sneaky', 'salty', 'cranky', 'feral',
