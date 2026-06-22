@@ -183,6 +183,7 @@
   let menuOpen = false;
   let hoverArticle = null;
   let targetArticle = null;
+  let hideTimer = null;
 
   function buildFloating() {
     floatRoot = document.createElement('div');
@@ -260,13 +261,20 @@
 
   function hideFloat() {
     if (menuOpen) return;
-    floatRoot.hidden = true;
-    hoverArticle = null;
+    hideTimer = setTimeout(() => {
+      floatRoot.hidden = true;
+      hoverArticle = null;
+      hideTimer = null;
+    }, 150);
+  }
+
+  function cancelHide() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
   }
 
   function onMouseOver(e) {
     const t = e.target;
-    if (floatRoot.contains(t)) return;
+    if (floatRoot.contains(t)) { cancelHide(); return; }
     const art = t.closest && t.closest('article');
     if (art && extractHandle(art)) showFloat(art);
   }
