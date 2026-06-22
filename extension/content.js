@@ -146,15 +146,16 @@
   }
 
   async function saveFlag(handle, category) {
+    const key = handle.toLowerCase();
     const local = await chrome.storage.local.get('slopfilter:flags');
     const flags = local['slopfilter:flags'] || [];
-    const key = handle.toLowerCase();
     if (!flags.some((f) => f.handle.toLowerCase() === key)) {
       flags.push({ handle, category, ts: Date.now() });
       await chrome.storage.local.set({ 'slopfilter:flags': flags });
     }
-    // Push to Supabase via background (handles offline retry queue).
+    myFlags.set(key, { handle, category, ts: Date.now() }); // update in-memory immediately
     chrome.runtime.sendMessage({ type: 'SUBMIT_FLAG', handle, category });
+    refresh(); // don't wait for the storage listener
     console.debug(`[slopfilter] flagged @${handle} as ${category}`);
   }
 
@@ -177,13 +178,14 @@
   }
 
   async function removeFlag(handle) {
+    const key = handle.toLowerCase();
     const local = await chrome.storage.local.get('slopfilter:flags');
     const flags = (local['slopfilter:flags'] || []).filter(
-      (f) => f.handle.toLowerCase() !== handle.toLowerCase()
+      (f) => f.handle.toLowerCase() !== key
     );
     await chrome.storage.local.set({ 'slopfilter:flags': flags });
-    myFlags.delete(handle.toLowerCase());
-    scheduleRefresh();
+    myFlags.delete(key); // update in-memory immediately
+    refresh(); // don't wait for the storage listener
   }
 
   function buildMenuItems(handle) {
@@ -272,15 +274,16 @@
     header.textContent = 'Flag as slop';
     floatMenu.appendChild(header);
 
-    // Click = open/close menu (suppressed right after a drag)
+    // Click = open menu or close it if already open (suppressed right after a drag)
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (justDragged) { justDragged = false; return; }
+      if (menuOpen) { closeMenu(); return; }
       targetArticle = hoverArticle;
       const handle = targetArticle && extractHandle(targetArticle);
       buildMenuItems(handle);
-      menuOpen = !menuOpen;
-      floatMenu.hidden = !menuOpen;
+      menuOpen = true;
+      floatMenu.hidden = false;
     });
 
     // Drag start
