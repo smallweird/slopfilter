@@ -28,7 +28,7 @@
   height: 32px;
   font-size: 15px;
   line-height: 1;
-  cursor: grab;
+  cursor: pointer;
   color: #fff;
   background: linear-gradient(135deg, #1d9bf0, #6c5ce7);
   border: none;
@@ -49,7 +49,6 @@
 }
 
 .slopfilter-flagbtn:active {
-  cursor: grabbing;
   transform: scale(0.96);
 }
 

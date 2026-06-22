@@ -183,11 +183,6 @@
   let menuOpen = false;
   let hoverArticle = null;
   let targetArticle = null;
-  let dragging = false;
-  let moved = false;
-  let justDragged = false;
-  let dragStart = null;
-  let dragArticle = null;
 
   function buildFloating() {
     floatRoot = document.createElement('div');
@@ -235,23 +230,8 @@
       floatMenu.appendChild(item);
     }
 
-    // Drag start
-    btn.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      e.preventDefault();
-      e.stopPropagation();
-      closeMenu();
-      dragging = true;
-      moved = false;
-      dragArticle = hoverArticle;
-      dragStart = { x: e.clientX, y: e.clientY };
-      floatRoot.style.transition = 'none';
-    });
-
-    // Click = open/close menu (suppressed right after a drag)
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (justDragged) { justDragged = false; return; }
       targetArticle = hoverArticle;
       menuOpen = !menuOpen;
       floatMenu.hidden = !menuOpen;
@@ -267,12 +247,9 @@
   }
 
   function positionFloat(article) {
-    const a = settings.anchor || { fx: 0.95, fy: 0.05 };
     const r = article.getBoundingClientRect();
-    const cx = r.left + a.fx * r.width;
-    const cy = r.top + a.fy * r.height;
-    floatRoot.style.left = `${window.scrollX + cx - BTN / 2}px`;
-    floatRoot.style.top = `${window.scrollY + cy - BTN / 2}px`;
+    floatRoot.style.left = `${window.scrollX + r.right + 4}px`;
+    floatRoot.style.top = `${window.scrollY + r.top + 8}px`;
   }
 
   function showFloat(article) {
@@ -282,54 +259,24 @@
   }
 
   function hideFloat() {
-    if (menuOpen || dragging) return;
+    if (menuOpen) return;
     floatRoot.hidden = true;
     hoverArticle = null;
   }
 
   function onMouseOver(e) {
-    if (dragging) return;
     const t = e.target;
     if (floatRoot.contains(t)) return;
     const art = t.closest && t.closest('article');
-    if (art) showFloat(art);
+    if (art && extractHandle(art)) showFloat(art);
   }
 
   function onMouseOut(e) {
-    if (dragging) return;
     const to = e.relatedTarget;
     if (!to) return hideFloat();
     if (floatRoot.contains(to)) return;
     if (to.closest && to.closest('article') === hoverArticle) return;
     hideFloat();
-  }
-
-  function onMouseMove(e) {
-    if (!dragging) return;
-    if (Math.abs(e.clientX - dragStart.x) > 4 || Math.abs(e.clientY - dragStart.y) > 4) {
-      moved = true;
-    }
-    floatRoot.style.left = `${window.scrollX + e.clientX - BTN / 2}px`;
-    floatRoot.style.top = `${window.scrollY + e.clientY - BTN / 2}px`;
-  }
-
-  function onMouseUp(e) {
-    if (!dragging) return;
-    dragging = false;
-    floatRoot.style.transition = '';
-    justDragged = moved;
-    if (moved) {
-      const art = dragArticle || hoverArticle;
-      if (art) {
-        const r = art.getBoundingClientRect();
-        settings.anchor = {
-          fx: clamp((e.clientX - r.left) / r.width, 0, 1),
-          fy: clamp((e.clientY - r.top) / r.height, 0, 1),
-        };
-        saveSettings();
-        if (hoverArticle) positionFloat(hoverArticle);
-      }
-    }
   }
 
   function onDocClick(e) {
@@ -368,8 +315,6 @@
     refresh();
     document.addEventListener('mouseover', onMouseOver, true);
     document.addEventListener('mouseout', onMouseOut, true);
-    document.addEventListener('mousemove', onMouseMove, true);
-    document.addEventListener('mouseup', onMouseUp, true);
     document.addEventListener('click', onDocClick, true);
     observer.observe(document.body, { childList: true, subtree: true });
     // Safety net: re-assert treatments in case a React re-render wiped inline styles
