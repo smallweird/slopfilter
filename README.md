@@ -1,56 +1,60 @@
 # Slopfilter
 
-Community-powered Chrome extension that filters AI-slop, bot accounts, and
-ragebait on X.com. See [SPEC.md](SPEC.md) for the full design.
+A community-powered Chrome extension that filters AI-slop, bot accounts, ragebait, and spam on X.com.
 
-> **Phase 1 (current):** local-only. Flag accounts yourself; flagged accounts get
-> hidden/blurred for you. No backend yet — that's Phase 2.
->
-> **Project root:** `D:\Ideas\slop-addon`
+When you flag an account, your flag is shared with everyone running the extension. When enough people flag the same account, it gets hidden or blurred for the whole community — no algorithm, no AI, just collective human judgement.
 
-## Load it in Chrome (dev)
+---
 
-1. Open `chrome://extensions`.
-2. Toggle **Developer mode** on (top-right).
-3. Click **Load unpacked** and select the **`D:\Ideas\slop-addon\extension`** folder.
-4. Open [x.com](https://x.com). Hover any post — a 🚩 button appears at its top-right.
+## How it works
 
-### Iterating
+- **Hover any post** on X.com — a 🚩 button appears
+- **Click it** to flag the account as bot, AI-slop, ragebait, or spam
+- **Flagged accounts** are immediately blurred or hidden for you, and your flag is submitted to the shared community list
+- **Click a blurred post** to reveal it for the session
+- **Click 🚩 again** on an already-flagged account to unflag it
 
-This is a **zero-build** extension — the files in `extension/` are exactly what
-Chrome runs. After editing any file:
+Your identity is a randomly generated UUID — never shown, never editable. Your display name (e.g. `suspiciousHeron36`) is cosmetic only.
 
-- Go to `chrome://extensions` and click the **reload** ↻ icon on the Slopfilter card.
-- Reload the x.com tab.
+---
 
-(Editing only `popup.*` usually just needs you to reopen the popup; content
-script / manifest changes need the extension reload above.)
+## Install (unpacked)
 
-## How Phase 1 behaves
+1. Clone or download this repo
+2. Open `chrome://extensions` in Chrome
+3. Enable **Developer mode** (top-right toggle)
+4. Click **Load unpacked** and select the `extension/` folder
+5. Go to [x.com](https://x.com) — the extension is active immediately
 
-- **Flag an account:** hover a post → click 🚩 → pick a category. That account is
-  saved to your local flag list and immediately hidden/blurred.
-- **Strictness slider:** `+1 / +10 / +100 / +1000`. Today this only matters for a
-  *community* list (Phase 2). Your **own** flags always hide the account regardless.
-- **Category chips:** turn off a category and accounts you flagged under it reappear.
-- **Treatment:** defaults to *blur-with-reveal*. (`hide` / `label` switch is in
-  storage; a UI toggle for it is a small later addition.)
+After pulling any update, click the **reload ↻** icon on the Slopfilter card in `chrome://extensions`, then reload the x.com tab.
+
+---
+
+## Popup settings
+
+| Setting | What it does |
+|---|---|
+| **Strictness** | Minimum number of independent community flags before an account is filtered for you. Your own flags always hide regardless. |
+| **Categories** | Toggle which flag types are active. Disable a category and those accounts reappear. |
+| **Blur / Hide** | Choose whether flagged posts are blurred-with-reveal or hidden entirely. |
+
+---
+
+## Privacy
+
+- The extension **never reports what you're viewing**. The server only receives flag submissions.
+- The community list is downloaded and matched locally — your timeline stays private.
+- Your installer ID is a random UUID stored in `chrome.storage.sync`. It roams with your Chrome profile and survives reinstalls, but is never exposed in the UI.
+
+---
 
 ## Files
 
 | File | Role |
 |---|---|
 | `extension/manifest.json` | MV3 manifest |
-| `extension/background.js` | Service worker — bootstraps the hidden ID + random name + default settings |
-| `extension/content.js` | Scans the timeline, applies treatments, floating flag button |
+| `extension/background.js` | Service worker: identity bootstrap, flag submission, community sync |
+| `extension/content.js` | Timeline scanning, blur/hide treatments, floating flag button |
 | `extension/content.css` | Styles injected into x.com |
-| `extension/popup.html/.css/.js` | The toolbar popup (name + slider + chips + support) |
-
-## Notes for devs
-
-- Node lives at `D:\Program Files\nodejs\` on this machine (not on PATH). Not
-  needed to run the extension; only for optional tooling. To use it:
-  `$env:Path = "D:\Program Files\nodejs;" + $env:Path`.
-- The hidden installer ID is in `chrome.storage.sync` and never shown. Inspect
-  state via the extension's service-worker console: `chrome://extensions` →
-  Slopfilter → "service worker" → `chrome.storage.sync.get(console.log)`.
+| `extension/popup.html/css/js` | Toolbar popup UI |
+| `scripts/generate-icons.js` | Generates extension icons (Node, optional) |
