@@ -11,6 +11,9 @@ desktop.ini
 # Node (only if tooling ever pulls deps)
 node_modules/
 
+# Claude Code session data
+.claude/
+
 # Secrets — never commit service-role keys. (Supabase anon key is public-safe.)
 .env
 .env.*
