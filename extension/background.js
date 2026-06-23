@@ -81,8 +81,8 @@ async function pushFlag(flaggerId, handle, category) {
       category,
     }),
   });
-  // 201 = created, 200 = ignored duplicate — both are success
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  // 201 = created, 409 = already flagged (unique constraint) — both are fine
+  if (!res.ok && res.status !== 409) throw new Error(`HTTP ${res.status}`);
 }
 
 async function enqueueRetry(entry) {
