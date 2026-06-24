@@ -162,7 +162,7 @@
 
   // Idempotent: (re)assert the correct treatment on every post.
   function refresh() {
-    for (const article of document.querySelectorAll('article')) {
+    for (const article of document.querySelectorAll('article[data-testid="tweet"]')) {
       const handle = extractHandle(article);
       if (!handle) continue;
       const v = revealedHandles.has(handle.toLowerCase()) ? null : verdict(handle);
@@ -336,7 +336,7 @@
     if (dragging) return;
     const t = e.target;
     if (floatRoot.contains(t)) return;
-    const art = t.closest && t.closest('article');
+    const art = t.closest && t.closest('article[data-testid="tweet"]');
     if (art && extractHandle(art)) showFloat(art);
   }
 
