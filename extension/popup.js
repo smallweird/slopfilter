@@ -55,6 +55,7 @@ async function load() {
 
   const subscribed = !!sync['slopfilter:subscribed'];
   el.dot.classList.toggle('gold', subscribed);
+  el.dot.classList.toggle('online', navigator.onLine);
   const displayName = sync['slopfilter:displayName'] || 'anon';
   el.name.textContent = displayName;
   document.getElementById('identity').title = subscribed
