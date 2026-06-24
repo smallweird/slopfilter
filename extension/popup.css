@@ -83,12 +83,25 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 9999px;
+  overflow: hidden;
 }
 
 .identity span:last-child {
+  display: inline-block;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 80px;
+}
+
+.identity:hover span:last-child {
+  text-overflow: clip;
+  animation: slopfilter-marquee 2.5s ease-in-out 0.4s infinite;
+}
+
+@keyframes slopfilter-marquee {
+  0%, 20%  { transform: translateX(0); }
+  80%, 100% { transform: translateX(-80px); }
 }
 
 .dot {
