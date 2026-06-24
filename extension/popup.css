@@ -94,13 +94,13 @@ body {
 #displayName {
   display: inline-block;
   white-space: nowrap;
+  width: 100%; /* fixed — never changes size so pill never shifts */
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 .identity:hover #displayName {
-  overflow: visible; /* let text escape its own box so translateX moves real letters */
+  overflow: visible; /* text escapes visually but layout width stays 100% */
   text-overflow: clip;
   animation: slopfilter-marquee 2.5s ease-in-out 0.4s infinite;
 }
