@@ -53,12 +53,13 @@ async function load() {
     'slopfilter:flags',
   ]);
 
-  el.name.textContent = sync['slopfilter:displayName'] || 'anon';
   const subscribed = !!sync['slopfilter:subscribed'];
   el.dot.classList.toggle('gold', subscribed);
+  const displayName = sync['slopfilter:displayName'] || 'anon';
+  el.name.textContent = displayName;
   document.getElementById('identity').title = subscribed
-    ? 'Reserved handle'
-    : 'Free handle — anonymous';
+    ? `${displayName} — Reserved handle`
+    : `${displayName} — Free user`;
 
   settings = Object.assign(defaultSettings(), local['slopfilter:settings'] || {});
 
