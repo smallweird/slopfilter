@@ -92,9 +92,9 @@ body {
 }
 
 #displayName {
-  display: inline-block;
+  display: block;
   white-space: nowrap;
-  width: 100%; /* fixed — never changes size so pill never shifts */
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
