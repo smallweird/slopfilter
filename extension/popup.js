@@ -20,6 +20,8 @@ const el = {
   strictHint: document.getElementById('strictHint'),
   treat: document.getElementById('treatment'),
   treatThumb: document.getElementById('treatThumb'),
+  flagging: document.getElementById('flagging'),
+  flagThumb: document.getElementById('flagThumb'),
   chips: document.getElementById('chips'),
   count: document.getElementById('flagCount'),
   catCounts: document.getElementById('catCounts'),
@@ -66,6 +68,7 @@ async function load() {
 
   setSegment(el.strict, el.strictThumb, settings.strictness);
   setSegment(el.treat, el.treatThumb, settings.treatment);
+  setSegment(el.flagging, el.flagThumb, settings.flagging);
   renderStrictHint();
 
   for (const chip of el.chips.querySelectorAll('.chip')) {
@@ -102,6 +105,14 @@ el.treat.addEventListener('click', (e) => {
   if (!seg) return;
   settings.treatment = seg.dataset.val;
   setSegment(el.treat, el.treatThumb, settings.treatment);
+  save();
+});
+
+el.flagging.addEventListener('click', (e) => {
+  const seg = e.target.closest('.seg');
+  if (!seg) return;
+  settings.flagging = seg.dataset.val === 'true';
+  setSegment(el.flagging, el.flagThumb, settings.flagging);
   save();
 });
 

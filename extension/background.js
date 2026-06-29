@@ -31,6 +31,7 @@ function defaultSettings() {
   return {
     strictness: 10,
     treatment: 'blur',
+    flagging: true,
     categories: { bot: true, 'ai-slop': true, ragebait: true, spam: true },
     anchor: { fx: 0.95, fy: 0.05 },
   };

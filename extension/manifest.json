@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Slopfilter",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Community-powered filter for AI-slop, bots, and ragebait on X.com.",
   "permissions": ["storage", "alarms"],
   "host_permissions": [

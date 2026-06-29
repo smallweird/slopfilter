@@ -39,6 +39,7 @@
     return {
       strictness: 10,
       treatment: 'blur', // 'hide' | 'blur' (blur-with-reveal)
+      flagging: true,
       categories: { bot: true, 'ai-slop': true, ragebait: true, spam: true },
       anchor: { fx: 0.95, fy: 0.05 }, // flag-button position as a fraction of a post's box
     };
@@ -337,7 +338,7 @@
     const t = e.target;
     if (floatRoot.contains(t)) return;
     const art = t.closest && t.closest('article[data-testid="tweet"]');
-    if (art && extractHandle(art)) showFloat(art);
+    if (art && settings.flagging && extractHandle(art)) showFloat(art);
   }
 
   function onMouseOut(e) {
